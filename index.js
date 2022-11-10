@@ -37,19 +37,7 @@ function verifyJWT(req, res, next) {
         next();
     })
 }
-async function run() {
-    try {
-        const serviceCollection = client.db('mPhotography').collection('services');
-        const bannerCollection = client.db('mPhotography').collection('banners');
-        const reviewCollection = client.db('mPhotography').collection('reviews');
 
-    }
-    finally {
-
-    }
-
-}
-run().catch(err => console.error(err));
 
 
 app.listen(port, () => {
