@@ -49,7 +49,15 @@ async function run() {
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
             res.send({ token })
         })
-
+       
+        app.get('/banners', async (req, res) => {
+            const query = {}
+            const cursor = bannerCollection.find(query);
+            const banners = await cursor.toArray();
+            res.send(banners);
+        });
+  
+        
     }
     finally {
   
