@@ -22,36 +22,19 @@ const client = new MongoClient(uri, {
 });
 
 
-function verifyJWT(req, res, next) {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-        return res.status(401).send({ message: 'unauthorized access' });
-    }
-    const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-        if (err) {
-            return res.status(403).send({ message: 'Forbidden access' });
-        }
-        req.decoded = decoded;
-        next();
-    })
-}
 
 async function run() {
     try {
         const serviceCollection = client.db('mPhotography').collection('services');
-        const bannerCollection = client.db('mPhotography').collection('banners');
         const galleryCollection = client.db('mPhotography').collection('gallery');
         const reviewCollection = client.db('mPhotography').collection('reviews');
-  
+
         app.post('/jwt', (req, res) => {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
             res.send({ token })
         })
-       
+
         app.get('/banners', async (req, res) => {
             const query = {}
             const cursor = bannerCollection.find(query);
@@ -64,41 +47,30 @@ async function run() {
             const gallery = await cursor.toArray();
             res.send(gallery);
         });
-  
+
         app.get('/services', async (req, res) => {
             const query = {}
             const cursor = serviceCollection.find(query);
             const services = await cursor.limit(3).toArray();
             res.send(services);
         });
-        
+
         app.get('/all_services', async (req, res) => {
             const query = {}
             const cursor = serviceCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
         });
-  
+
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const service = await serviceCollection.findOne(query);
             res.send(service);
         });
-  
-        app.get('/reviews', verifyJWT, async (req, res) => {
-            const decoded = req.decoded;
-  
-            if (decoded.email !== req.query.email) {
-                res.status(403).send({ message: 'unauthorized access' })
-            }
-  
+
+        app.get('/reviews', async (req, res) => {
             let query = {};
-            if (req.query.email) {
-                query = {
-                    email: req.query.email
-                }
-            }
             const cursor = reviewCollection.find(query);
             const reviews = await cursor.toArray();
             res.send(reviews);
@@ -111,14 +83,14 @@ async function run() {
             const reviews = await cursor.toArray();
             res.send(reviews);
         });
-  
-        app.post('/add_review', verifyJWT, async (req, res) => {
+
+        app.post('/add_review', async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
         });
-  
-        app.patch('/reviews/:id', verifyJWT, async (req, res) => {
+
+        app.patch('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const status = req.body.status
             const query = { _id: ObjectId(id) }
@@ -130,8 +102,8 @@ async function run() {
             const result = await reviewCollection.updateOne(query, updatedDoc);
             res.send(result);
         })
-  
-        app.delete('/reviews/:id', verifyJWT, async (req, res) => {
+
+        app.delete('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await reviewCollection.deleteOne(query);
@@ -139,13 +111,13 @@ async function run() {
         })
     }
     finally {
-  
+
     }
-  
- }
- run().catch(err => console.error(err));
- 
- 
+
+}
+run().catch(err => console.error(err));
+
+
 
 
 app.listen(port, () => {
