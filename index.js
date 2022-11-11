@@ -43,6 +43,7 @@ async function run() {
     try {
         const serviceCollection = client.db('mPhotography').collection('services');
         const bannerCollection = client.db('mPhotography').collection('banners');
+        const galleryCollection = client.db('mPhotography').collection('gallery');
         const reviewCollection = client.db('mPhotography').collection('reviews');
   
         app.post('/jwt', (req, res) => {
@@ -56,6 +57,12 @@ async function run() {
             const cursor = bannerCollection.find(query);
             const banners = await cursor.toArray();
             res.send(banners);
+        });
+        app.get('/gallery', async (req, res) => {
+            const query = {}
+            const cursor = galleryCollection.find(query);
+            const gallery = await cursor.toArray();
+            res.send(gallery);
         });
   
         app.get('/services', async (req, res) => {
