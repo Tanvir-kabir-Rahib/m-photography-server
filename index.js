@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const serviceCollection = client.db('mPhotography').collection('services');
-        const galleryCollection = client.db('mPhotography').collection('gallery');
+        const bannerCollection = client.db('mPhotography').collection('banners');
         const reviewCollection = client.db('mPhotography').collection('reviews');
 
         app.post('/jwt', (req, res) => {
