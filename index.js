@@ -115,11 +115,11 @@ async function run() {
 
         app.patch('/reviews/:id', async (req, res) => {
             const id = req.params.id;
-            const status = req.body.status
+            const edited = req.body
             const query = { _id: ObjectId(id) }
             const updatedDoc = {
                 $set: {
-                    status: status
+                    body: edited
                 }
             }
             const result = await reviewCollection.updateOne(query, updatedDoc);
