@@ -92,13 +92,21 @@ async function run() {
                 }
             }
             const cursor = reviewCollection.find(query);
-            const orders = await cursor.toArray();
-            res.send(orders);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+        
+        app.get('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
         });
   
         app.post('/add_review', verifyJWT, async (req, res) => {
-            const order = req.body;
-            const result = await reviewCollection.insertOne(order);
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
             res.send(result);
         });
   
